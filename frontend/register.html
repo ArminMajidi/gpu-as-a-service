@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ثبت‌نام - سرویس GPU</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    .register-card {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      max-width: 450px;
+      margin: 50px auto;
+    }
+    .register-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 15px 15px 0 0;
+      text-align: center;
+    }
+    .register-header h3 {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+    .register-body {
+      padding: 30px;
+    }
+    .form-label {
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 8px;
+    }
+    .form-control {
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 12px;
+      transition: all 0.3s;
+    }
+    .form-control:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    .btn-register {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      padding: 12px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 8px;
+      transition: transform 0.2s;
+    }
+    .btn-register:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+    }
+    .password-strength {
+      height: 4px;
+      border-radius: 2px;
+      margin-top: 5px;
+      transition: all 0.3s;
+    }
+    .strength-weak { background-color: #ef4444; width: 33%; }
+    .strength-medium { background-color: #f59e0b; width: 66%; }
+    .strength-strong { background-color: #10b981; width: 100%; }
+    .divider {
+      text-align: center;
+      margin: 20px 0;
+      color: #9ca3af;
+    }
+    .divider::before,
+    .divider::after {
+      content: "";
+      display: inline-block;
+      width: 40%;
+      height: 1px;
+      background-color: #e5e7eb;
+      vertical-align: middle;
+    }
+    .divider::before {
+      margin-left: 10px;
+    }
+    .divider::after {
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body class="d-flex align-items-center">
+
+<div class="container">
+  <div class="register-card">
+    <!-- Header -->
+    <div class="register-header">
+      <h3>🚀 ثبت‌نام در سیستم</h3>
+      <p class="mb-0 mt-2" style="opacity: 0.9;">برای استفاده از سرویس GPU حساب کاربری بسازید</p>
+    </div>
+
+    <!-- Body -->
+    <div class="register-body">
+      <!-- Alert Messages -->
+      <div id="error-message" class="alert alert-danger d-none" role="alert"></div>
+      <div id="success-message" class="alert alert-success d-none" role="alert"></div>
+
+      <!-- Registration Form -->
+      <form id="register-form">
+        <!-- Full Name -->
+        <div class="mb-3">
+          <label for="full-name" class="form-label">نام و نام خانوادگی</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="full-name" 
+            placeholder="مثال: علی احمدی"
+            required
+            minlength="3"
+          >
+          <div class="invalid-feedback">
+            لطفاً نام کامل خود را وارد کنید (حداقل ۳ کاراکتر)
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="mb-3">
+          <label for="email" class="form-label">ایمیل</label>
+          <input 
+            type="email" 
+            class="form-control" 
+            id="email" 
+            placeholder="example@domain.com"
+            required
+          >
+          <div class="invalid-feedback">
+            لطفاً یک ایمیل معتبر وارد کنید
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="mb-3">
+          <label for="password" class="form-label">رمز عبور</label>
+          <input 
+            type="password" 
+            class="form-control" 
+            id="password" 
+            placeholder="حداقل ۶ کاراکتر"
+            required
+            minlength="6"
+          >
+          <div class="password-strength d-none" id="password-strength"></div>
+          <small class="text-muted">حداقل ۶ کاراکتر - ترکیبی از حروف، اعداد و علائم توصیه می‌شود</small>
+          <div class="invalid-feedback">
+            رمز عبور باید حداقل ۶ کاراکتر باشد
+          </div>
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="mb-3">
+          <label for="confirm-password" class="form-label">تکرار رمز عبور</label>
+          <input 
+            type="password" 
+            class="form-control" 
+            id="confirm-password" 
+            placeholder="رمز عبور را دوباره وارد کنید"
+            required
+          >
+          <div class="invalid-feedback" id="confirm-password-feedback">
+            رمزهای عبور مطابقت ندارند
+          </div>
+        </div>
+
+        <!-- Terms & Conditions -->
+        <div class="mb-3 form-check">
+          <input 
+            type="checkbox" 
+            class="form-check-input" 
+            id="accept-terms"
+            required
+          >
+          <label class="form-check-label" for="accept-terms">
+            <a href="#" class="text-decoration-none">قوانین و مقررات</a> را مطالعه کرده و می‌پذیرم
+          </label>
+          <div class="invalid-feedback">
+            باید قوانین را بپذیرید
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary btn-register w-100 mb-3" id="register-btn">
+          ثبت‌نام
+        </button>
+      </form>
+
+      <!-- Divider -->
+      <div class="divider">یا</div>
+
+      <!-- Login Link -->
+      <div class="text-center">
+        <p class="mb-0">
+          قبلاً ثبت‌نام کرده‌اید؟ 
+          <a href="index.html" class="text-decoration-none fw-bold" style="color: #667eea;">ورود</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/register.js"></script>
+</body>
+</html>

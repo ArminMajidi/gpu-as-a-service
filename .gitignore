@@ -1,0 +1,73 @@
+# -----------------------------
+# Python
+# -----------------------------
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+*.log
+
+# -----------------------------
+# Virtual Environment
+# -----------------------------
+env/
+venv/
+.venv/
+
+# -----------------------------
+# IDE / Editor files
+# -----------------------------
+.vscode/
+.idea/
+*.swp
+
+# -----------------------------
+# Environment / Secrets
+# -----------------------------
+.env
+*.env
+env.local
+config.ini
+
+# -----------------------------
+# Cache & Temp
+# -----------------------------
+*.sqlite3
+*.db
+test.db
+pytest_cache/
+.cache/
+*.tmp
+
+# -----------------------------
+# Bytecode & Reports
+# -----------------------------
+*.out
+*.coverage
+.coverage.*
+htmlcov/
+
+# -----------------------------
+# Docker
+# -----------------------------
+/data/
+docker-data/
+*.pid
+
+# -----------------------------
+# OS garbage
+# -----------------------------
+.DS_Store
+Thumbs.db
+
+# -----------------------------
+# Project specific
+# -----------------------------
+/app/__pycache__/
+/migrations/__pycache__/

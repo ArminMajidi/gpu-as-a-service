@@ -1,0 +1,34 @@
+# docker-compose.yml
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: gpu_db
+    environment:
+      POSTGRES_USER: gpu_user
+      POSTGRES_PASSWORD: gpu_password
+      POSTGRES_DB: gpu_service
+    ports:
+      - "5432:5432"
+    volumes:
+      - gpu_db_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  api:
+    build: .
+    container_name: gpu_api
+    depends_on:
+      - db
+    environment:
+      DB_USER: gpu_user
+      DB_PASSWORD: gpu_password
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: gpu_service
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+volumes:
+  gpu_db_data:

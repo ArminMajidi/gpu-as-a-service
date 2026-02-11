@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>پنل مدیریت - سرویس GPU</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <style>
+    body {
+      background-color: #f5f7fa;
+    }
+    .navbar {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .card {
+      border: none;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      margin-bottom: 20px;
+    }
+    .stats-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+    .stats-card h3 {
+      font-size: 2.5rem;
+      font-weight: bold;
+      margin: 0;
+    }
+    .stats-card p {
+      margin: 0;
+      opacity: 0.9;
+    }
+    .job-status {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .status-pending { background-color: #fef3c7; color: #92400e; }
+    .status-approved { background-color: #dbeafe; color: #1e40af; }
+    .status-running { background-color: #d1fae5; color: #065f46; }
+    .status-completed { background-color: #dcfce7; color: #14532d; }
+    .status-failed { background-color: #fee2e2; color: #991b1b; }
+    .status-rejected { background-color: #f3f4f6; color: #374151; }
+    
+    .action-btn {
+      padding: 4px 12px;
+      font-size: 0.85rem;
+      margin: 2px;
+    }
+    
+    .table {
+      font-size: 0.9rem;
+    }
+    
+    .filter-section {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-dark mb-4">
+  <div class="container-fluid">
+    <span class="navbar-brand mb-0 h1">👑 پنل مدیریت</span>
+    <div>
+      <span class="text-white me-3" id="admin-name">مدیر</span>
+      <button class="btn btn-outline-light btn-sm" onclick="logout()">خروج</button>
+    </div>
+  </div>
+</nav>
+
+<div class="container-fluid">
+  
+  <!-- Statistics Cards -->
+  <div class="row mb-4">
+    <div class="col-md-3">
+      <div class="stats-card">
+        <h3 id="stat-total">0</h3>
+        <p>کل Job ها</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stats-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+        <h3 id="stat-pending">0</h3>
+        <p>در انتظار تایید</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stats-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+        <h3 id="stat-running">0</h3>
+        <p>در حال اجرا</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stats-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+        <h3 id="stat-completed">0</h3>
+        <p>تکمیل شده</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter Section -->
+  <div class="filter-section">
+    <div class="row">
+      <div class="col-md-3">
+        <label class="form-label">فیلتر وضعیت:</label>
+        <select class="form-select" id="filter-status" onchange="loadAllJobs()">
+          <option value="">همه</option>
+          <option value="pending">در انتظار</option>
+          <option value="approved">تایید شده</option>
+          <option value="running">در حال اجرا</option>
+          <option value="completed">تکمیل شده</option>
+          <option value="failed">ناموفق</option>
+          <option value="rejected">رد شده</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">جستجو:</label>
+        <input type="text" class="form-control" id="search-input" placeholder="نام Job یا ایمیل کاربر..." onkeyup="filterJobs()">
+      </div>
+      <div class="col-md-6 d-flex align-items-end">
+        <button class="btn btn-primary" onclick="loadAllJobs()">
+          🔄 بروزرسانی
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alert Messages -->
+  <div id="alert-container"></div>
+
+  <!-- Jobs Table -->
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title mb-3">مدیریت Job ها</h5>
+      <div class="table-responsive">
+        <table class="table table-hover" id="jobs-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>نام Job</th>
+              <th>کاربر</th>
+              <th>GPU</th>
+              <th>تعداد</th>
+              <th>ساعت</th>
+              <th>وضعیت</th>
+              <th>تاریخ ایجاد</th>
+              <th>عملیات</th>
+            </tr>
+          </thead>
+          <tbody id="jobs-body">
+            <tr>
+              <td colspan="9" class="text-center text-muted py-4">
+                <div class="spinner-border" role="status">
+                  <span class="visually-hidden">در حال بارگذاری...</span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Job Details Modal -->
+  <div class="modal fade" id="jobDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">جزئیات Job</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="modal-job-details">
+          <!-- Job details will be loaded here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>
