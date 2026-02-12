@@ -3,208 +3,394 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ثبت‌نام - سرویس GPU</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <title>ثبت نام - GPU Task Manager</title>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
+      font-family: 'Vazirmatn', sans-serif;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
     }
-    .register-card {
-      background: white;
-      border-radius: 15px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-      max-width: 450px;
-      margin: 50px auto;
+
+    .register-container {
+      width: 100%;
+      max-width: 500px;
+      animation: slideUp 0.5s ease-out;
     }
-    .register-header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 2rem;
       color: white;
-      padding: 30px;
-      border-radius: 15px 15px 0 0;
+    }
+
+    .logo-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .logo-text {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .logo-subtitle {
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+
+    .card {
+      background: white;
+      border-radius: 24px;
+      padding: 3rem;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 0.5rem;
       text-align: center;
     }
-    .register-header h3 {
-      margin: 0;
-      font-size: 1.8rem;
+
+    .card-subtitle {
+      text-align: center;
+      color: #64748b;
+      margin-bottom: 2rem;
     }
-    .register-body {
-      padding: 30px;
+
+    .form-group {
+      margin-bottom: 1.5rem;
     }
-    .form-label {
-      font-weight: 600;
-      color: #374151;
-      margin-bottom: 8px;
+
+    label {
+      display: block;
+      font-weight: 500;
+      color: #475569;
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
     }
-    .form-control {
-      border: 2px solid #e5e7eb;
-      border-radius: 8px;
-      padding: 12px;
-      transition: all 0.3s;
+
+    input {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      font-family: 'Vazirmatn', sans-serif;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: #f8fafc;
     }
-    .form-control:focus {
+
+    input:focus {
+      outline: none;
       border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      background: white;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
     }
-    .btn-register {
+
+    input::placeholder {
+      color: #94a3b8;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: #667eea;
+    }
+
+    .checkbox-group label {
+      margin: 0;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 1rem;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
       border: none;
-      padding: 12px;
-      font-size: 1.1rem;
+      border-radius: 12px;
+      font-size: 1rem;
       font-weight: 600;
-      border-radius: 8px;
-      transition: transform 0.2s;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Vazirmatn', sans-serif;
+      margin-top: 1rem;
     }
-    .btn-register:hover {
+
+    .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
     }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .alert {
+      padding: 1rem;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .alert-danger {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+
+    .alert-success {
+      background: #d1fae5;
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+    }
+
+    .d-none {
+      display: none !important;
+    }
+
+    .divider {
+      text-align: center;
+      margin: 1.5rem 0;
+      position: relative;
+    }
+
+    .divider::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: #e2e8f0;
+    }
+
+    .divider span {
+      background: white;
+      padding: 0 1rem;
+      color: #94a3b8;
+      font-size: 0.9rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .link {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .link:hover {
+      color: #764ba2;
+      text-decoration: underline;
+    }
+
     .password-strength {
       height: 4px;
       border-radius: 2px;
-      margin-top: 5px;
-      transition: all 0.3s;
+      background: #e2e8f0;
+      margin-top: 0.5rem;
+      overflow: hidden;
+      position: relative;
     }
-    .strength-weak { background-color: #ef4444; width: 33%; }
-    .strength-medium { background-color: #f59e0b; width: 66%; }
-    .strength-strong { background-color: #10b981; width: 100%; }
-    .divider {
-      text-align: center;
-      margin: 20px 0;
-      color: #9ca3af;
+
+    .password-strength::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+      transition: all 0.3s ease;
     }
-    .divider::before,
-    .divider::after {
-      content: "";
-      display: inline-block;
-      width: 40%;
-      height: 1px;
-      background-color: #e5e7eb;
-      vertical-align: middle;
+
+    .strength-weak::before {
+      width: 33%;
+      background: #ef4444;
     }
-    .divider::before {
-      margin-left: 10px;
+
+    .strength-medium::before {
+      width: 66%;
+      background: #f59e0b;
     }
-    .divider::after {
-      margin-right: 10px;
+
+    .strength-strong::before {
+      width: 100%;
+      background: #10b981;
+    }
+
+    .valid-feedback, .invalid-feedback {
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+    }
+
+    .valid-feedback {
+      color: #10b981;
+    }
+
+    .invalid-feedback {
+      color: #ef4444;
+    }
+
+    input.is-valid {
+      border-color: #10b981;
+    }
+
+    input.is-invalid {
+      border-color: #ef4444;
+    }
+
+    @media (max-width: 580px) {
+      .card {
+        padding: 2rem 1.5rem;
+      }
+
+      .logo-text {
+        font-size: 1.5rem;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
-<body class="d-flex align-items-center">
+<body>
 
-<div class="container">
-  <div class="register-card">
-    <!-- Header -->
-    <div class="register-header">
-      <h3>🚀 ثبت‌نام در سیستم</h3>
-      <p class="mb-0 mt-2" style="opacity: 0.9;">برای استفاده از سرویس GPU حساب کاربری بسازید</p>
+<div class="register-container">
+  <div class="logo">
+    <div class="logo-icon">⚡</div>
+    <div class="logo-text">GPU Task Manager</div>
+    <div class="logo-subtitle">مدیریت حرفه‌ای منابع محاسباتی</div>
+  </div>
+
+  <div class="card">
+    <h2 class="card-title">ایجاد حساب کاربری</h2>
+    <p class="card-subtitle">برای شروع کار اطلاعات خود را وارد کنید</p>
+
+    <div id="error-message" class="alert alert-danger d-none">
+      ⚠️ <span></span>
     </div>
 
-    <!-- Body -->
-    <div class="register-body">
-      <!-- Alert Messages -->
-      <div id="error-message" class="alert alert-danger d-none" role="alert"></div>
-      <div id="success-message" class="alert alert-success d-none" role="alert"></div>
+    <div id="success-message" class="alert alert-success d-none">
+      ✅ <span></span>
+    </div>
 
-      <!-- Registration Form -->
-      <form id="register-form">
-        <!-- Full Name -->
-        <div class="mb-3">
-          <label for="full-name" class="form-label">نام و نام خانوادگی</label>
-          <input 
-            type="text" 
-            class="form-control" 
-            id="full-name" 
-            placeholder="مثال: علی احمدی"
-            required
-            minlength="3"
-          >
-          <div class="invalid-feedback">
-            لطفاً نام کامل خود را وارد کنید (حداقل ۳ کاراکتر)
-          </div>
-        </div>
-
-        <!-- Email -->
-        <div class="mb-3">
-          <label for="email" class="form-label">ایمیل</label>
-          <input 
-            type="email" 
-            class="form-control" 
-            id="email" 
-            placeholder="example@domain.com"
-            required
-          >
-          <div class="invalid-feedback">
-            لطفاً یک ایمیل معتبر وارد کنید
-          </div>
-        </div>
-
-        <!-- Password -->
-        <div class="mb-3">
-          <label for="password" class="form-label">رمز عبور</label>
-          <input 
-            type="password" 
-            class="form-control" 
-            id="password" 
-            placeholder="حداقل ۶ کاراکتر"
-            required
-            minlength="6"
-          >
-          <div class="password-strength d-none" id="password-strength"></div>
-          <small class="text-muted">حداقل ۶ کاراکتر - ترکیبی از حروف، اعداد و علائم توصیه می‌شود</small>
-          <div class="invalid-feedback">
-            رمز عبور باید حداقل ۶ کاراکتر باشد
-          </div>
-        </div>
-
-        <!-- Confirm Password -->
-        <div class="mb-3">
-          <label for="confirm-password" class="form-label">تکرار رمز عبور</label>
-          <input 
-            type="password" 
-            class="form-control" 
-            id="confirm-password" 
-            placeholder="رمز عبور را دوباره وارد کنید"
-            required
-          >
-          <div class="invalid-feedback" id="confirm-password-feedback">
-            رمزهای عبور مطابقت ندارند
-          </div>
-        </div>
-
-        <!-- Terms & Conditions -->
-        <div class="mb-3 form-check">
-          <input 
-            type="checkbox" 
-            class="form-check-input" 
-            id="accept-terms"
-            required
-          >
-          <label class="form-check-label" for="accept-terms">
-            <a href="#" class="text-decoration-none">قوانین و مقررات</a> را مطالعه کرده و می‌پذیرم
-          </label>
-          <div class="invalid-feedback">
-            باید قوانین را بپذیرید
-          </div>
-        </div>
-
-        <!-- Submit Button -->
-        <button type="submit" class="btn btn-primary btn-register w-100 mb-3" id="register-btn">
-          ثبت‌نام
-        </button>
-      </form>
-
-      <!-- Divider -->
-      <div class="divider">یا</div>
-
-      <!-- Login Link -->
-      <div class="text-center">
-        <p class="mb-0">
-          قبلاً ثبت‌نام کرده‌اید؟ 
-          <a href="index.html" class="text-decoration-none fw-bold" style="color: #667eea;">ورود</a>
-        </p>
+    <form id="register-form">
+      <div class="form-group">
+        <label for="full-name">نام و نام خانوادگی</label>
+        <input type="text" id="full-name" placeholder="نام کامل خود را وارد کنید" required autocomplete="name">
       </div>
+
+      <div class="form-group">
+        <label for="email">ایمیل</label>
+        <input type="email" id="email" placeholder="example@domain.com" required autocomplete="email">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="password">رمز عبور</label>
+          <input type="password" id="password" placeholder="حداقل 6 کاراکتر" required autocomplete="new-password">
+          <div id="password-strength" class="password-strength d-none"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="confirm-password">تکرار رمز عبور</label>
+          <input type="password" id="confirm-password" placeholder="تکرار رمز عبور" required autocomplete="new-password">
+          <div id="confirm-password-feedback"></div>
+        </div>
+      </div>
+
+      <div class="checkbox-group">
+        <input type="checkbox" id="accept-terms" required>
+        <label for="accept-terms">
+          قوانین و مقررات را می‌پذیرم
+        </label>
+      </div>
+
+      <button type="submit" class="btn-primary" id="register-btn">
+        ثبت نام
+      </button>
+    </form>
+
+    <div class="divider">
+      <span>یا</span>
     </div>
+
+    <p class="text-center">
+      قبلاً ثبت نام کرده‌اید؟ 
+      <a href="index.html" class="link">وارد شوید</a>
+    </p>
   </div>
 </div>
 
