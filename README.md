@@ -1,87 +1,158 @@
 # GPU Task Manager
 
-یه سرویس ساده برای مدیریت Job های GPU که با FastAPI نوشته شده.
+سیستم مدیریت Job های GPU با معماری RESTful API
 
-## چیکار می‌کنه؟
+## توضیحات پروژه
 
-کاربرا می‌تونن Job های GPU خودشون رو ثبت کنن، ادمین‌ها تایید می‌کنن و بعد اجرا میشه. همه چیز شبیه‌سازیه و نیازی به GPU واقعی نیست.
+این پروژه یک سرویس GPU as a Service است که امکان ثبت، مدیریت و اجرای شبیه‌سازی شده Job های GPU را فراهم می‌کند. سیستم شامل احراز هویت کاربران، مدیریت سهمیه منابع و پنل مدیریتی برای ادمین‌ها است.
 
-## تکنولوژی‌ها
+### ویژگی‌های اصلی
 
-- FastAPI برای Backend
-- PostgreSQL برای Database
-- Docker برای اجرا
-- Bootstrap برای UI
+- **احراز هویت امن**: استفاده از JWT Token و هش کردن رمز عبور با bcrypt
+- **مدیریت Job**: چرخه کامل از ثبت تا اجرا و نتیجه‌گیری
+- **مدیریت سهمیه**: کنترل مصرف ماهانه GPU برای هر کاربر
+- **پنل مدیریت**: رابط کاربری برای ادمین‌ها جهت تایید و راه‌اندازی Job ها
+- **رابط کاربری**: داشبورد کاربرپسند برای مشاهده و ثبت Job ها
 
-## نصب
+## تکنولوژی‌های استفاده شده
 
-اگه Docker داری، خیلی راحته:
+**Backend:**
+- FastAPI - فریمورک وب
+- SQLAlchemy - ORM
+- PostgreSQL - دیتابیس
+- PyJWT - احراز هویت
+- Pydantic - اعتبارسنجی داده
+
+**Frontend:**
+- HTML/CSS/JavaScript
+- Bootstrap 5
+
+**DevOps:**
+- Docker & Docker Compose
+- pytest - تست خودکار
+
+## نصب و راه‌اندازی
+
+### با استفاده از Docker Compose
 
 ```bash
 docker-compose up --build
 ```
 
-بعد برو `http://localhost:8000/ui/index.html`
+سرویس بر روی پورت 8000 در دسترس خواهد بود.
 
-یا اگه می‌خوای مستقیم اجرا کنی:
+### اجرای مستقیم
 
 ```bash
+# ایجاد محیط مجازی
 python -m venv venv
 source venv/bin/activate
+
+# نصب وابستگی‌ها
 pip install -r requirements.txt
+
+# اجرای سرور
 uvicorn app.main:app --reload
 ```
 
-فقط یادت باشه PostgreSQL رو هم اجرا کنی و متغیرهای محیطی رو ست کنی.
+## دسترسی به سرویس‌ها
 
-## چطور کار می‌کنه؟
+- **رابط کاربری**: `http://localhost:8000/ui/index.html`
+- **API Documentation**: `http://localhost:8000/docs`
+- **Health Check**: `http://localhost:8000/health`
 
-۱. کاربر ثبت‌نام می‌کنه و لاگین میشه
-۲. Job جدید می‌سازه (نوع GPU، تعداد، ساعت و...)
-۳. Job به حالت PENDING میره
-۴. ادمین تایید یا رد می‌کنه
-۵. اگه تایید شد، ادمین شروع می‌کنه
-۶. Job اجرا میشه (شبیه‌سازی) و تمام میشه یا fail میشه
+## معماری سیستم
 
-## API Docs
+### مدل‌های دیتابیس
 
-بعد از اجرا، برو `http://localhost:8000/docs` - اونجا همه endpoint ها رو می‌بینی و می‌تونی امتحان کنی.
+- **User**: اطلاعات کاربران و نقش آن‌ها
+- **Job**: اطلاعات Job ها شامل وضعیت، نوع GPU و پارامترهای اجرا
+- **UserQuota**: سهمیه ماهانه و مصرف هر کاربر
 
-## ویژگی‌های اصلی
+### چرخه حیات Job
 
-- احراز هویت با JWT
-- مدیریت سهمیه ماهانه برای هر کاربر
-- پنل ادمین برای مدیریت Job ها
-- UI ساده و کاربرپسند
-- تست‌های خودکار
+```
+PENDING → APPROVED → RUNNING → COMPLETED/FAILED
+   ↓
+REJECTED
+```
+
+1. کاربر Job را ثبت می‌کند (وضعیت: PENDING)
+2. ادمین Job را بررسی و تایید یا رد می‌کند
+3. در صورت تایید، ادمین Job را شروع می‌کند (وضعیت: RUNNING)
+4. Job اجرا می‌شود و به وضعیت COMPLETED یا FAILED می‌رسد
+
+### API Endpoints
+
+**احراز هویت:**
+- `POST /api/v1/auth/register` - ثبت‌نام کاربر جدید
+- `POST /api/v1/auth/login` - ورود و دریافت توکن
+
+**کاربر:**
+- `GET /api/v1/jobs` - لیست Job های کاربر
+- `POST /api/v1/jobs` - ثبت Job جدید
+- `GET /api/v1/jobs/{id}` - جزئیات یک Job
+
+**ادمین:**
+- `GET /api/v1/admin/jobs` - لیست تمام Job ها
+- `POST /api/v1/admin/jobs/{id}/approve` - تایید Job
+- `POST /api/v1/admin/jobs/{id}/reject` - رد Job
+- `POST /api/v1/admin/jobs/{id}/start` - شروع اجرای Job
+
+## ساختار پروژه
+
+```
+gpu-task-manager-fastapi-main/
+├── app/
+│   ├── api/v1/              # API Routes
+│   ├── models/              # Database Models
+│   ├── schemas/             # Pydantic Schemas
+│   ├── services/            # Business Logic
+│   ├── core/                # Security & Config
+│   ├── db/                  # Database Session
+│   └── main.py              # Application Entry Point
+├── frontend/                # UI Files
+├── tests/                   # Test Suite
+├── docker-compose.yml       # Docker Configuration
+├── Dockerfile
+├── requirements.txt
+└── README.md
+```
 
 ## تست
+
+اجرای تست‌های خودکار:
 
 ```bash
 pytest tests/
 ```
 
-## ساختار پروژه
+Coverage Report:
 
-```
-app/
-  ├── api/v1/          # route های API
-  ├── models/          # مدل‌های دیتابیس
-  ├── schemas/         # پایدنتیک schemas
-  ├── services/        # لاجیک اصلی (مثل job runner)
-  └── main.py          # entry point
-
-frontend/            # فایل‌های HTML/JS/CSS
-tests/              # تست‌ها
-docker-compose.yml  # برای اجرا با Docker
+```bash
+pytest --cov=app tests/
 ```
 
-## نکات
+## امنیت
 
-- تو حالت production حتماً `JWT_SECRET_KEY` رو عوض کن
-- دیتابیس PostgreSQL استفاده میشه، نه SQLite
-- برای تبدیل کاربر به ادمین باید مستقیم تو دیتابیس `is_admin` رو `true` کنی
+- استفاده از JWT برای احراز هویت
+- هش کردن رمز عبور با الگوریتم bcrypt
+- اعتبارسنجی ورودی‌ها با Pydantic
+- تفکیک دسترسی کاربر و ادمین
 
-## مجوز
+## نکات مهم
 
-پروژه آموزشیه، استفاده آزاد.
+- برای تبدیل یک کاربر به ادمین، باید مقدار `is_admin` در دیتابیس را به `true` تغییر دهید
+- در محیط production حتماً `JWT_SECRET_KEY` را تغییر دهید
+- سیستم به صورت شبیه‌سازی کار می‌کند و نیازی به GPU فیزیکی ندارد
+
+## مستندات تکمیلی
+
+- `ARCHITECTURE.md` - جزئیات معماری سیستم
+- `CLASS_DIAGRAM.md` - نمودار کلاس‌ها و روابط
+
+## اطلاعات پروژه
+
+**اعضا گروه**:  آرمین مجیدی ، کیانا حسین پور ، هستی راه پی
+**استاد راهنما**: دکتر امیرحسین طباطبایی  
+**درس**: برنامه‌نویسی پیشرفته
